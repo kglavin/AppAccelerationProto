@@ -9,7 +9,7 @@ class ServiceHeader(object):
 		self.magic = 1279
 		self.sharedsecret = sharedsecret
 		# based on size of 4 shorts in struct.pack('hhhh',self.magic, l,l,self.magic)
-		self.headersize = 16
+		self.headersize = 8 
 
 	def generate(self,metadata,id=None,):
 		if metadata is None:
