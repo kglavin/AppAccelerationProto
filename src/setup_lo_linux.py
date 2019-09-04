@@ -6,7 +6,7 @@ loopback = 'lo'
 loAddress = "127.0.100."
 loNetmask = 'netmask 0xffffff00'
 rangeStart = 1
-rangeEnd = 254
+rangeEnd = 10 
 
 add_oper = ' add '
 del_oper = ' del  '
@@ -20,8 +20,8 @@ if __name__ == "__main__":
 			if sys.argv[1] == 'del':
 				oper = del_oper
 		if oper != 'show':
-			for n in range(1,254):
-				cmd = "ifconfig " + loopback + ":" + str(n) + " "  + oper + loAddress + str(n) + " netmask 255.0.0.0"
+			for n in range(rangeStart,rangeEnd):
+				cmd = "ifconfig " + loopback + ":" + str(n) + " "  + oper +  " inet " + loAddress + str(n) + "/8"
 				os.system(cmd)
 	if oper == 'show':
 		cmd = "ifconfig " + loopback + " " 
