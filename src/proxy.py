@@ -103,7 +103,7 @@ class Proxy(threading.Thread):
         else:
             self.servicetarget = 443
 
-         if 'sharedsecret' in self.kwargs:
+        if 'sharedsecret' in self.kwargs:
             self.sharedsecret = self.kwargs['sharedsecret']
         else:
             self.sharedsecret = b'this is the shared secret'
