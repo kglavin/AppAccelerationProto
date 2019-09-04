@@ -90,7 +90,7 @@ class EdgeProc(threading.Thread):
         if 'servicelocal' in self.kwargs:
             self.servicelocal = self.kwargs['servicelocal']
         else:
-            self.servicelocal = 5443
+            self.servicelocal = 443
 
         if 'sharedsecret' in self.kwargs:
             self.sharedsecret = self.kwargs['sharedsecret']
@@ -144,17 +144,25 @@ class EdgeProc(threading.Thread):
                         metadata = None
                         try:
                             # first hundred bytes is the hidden header
+                            logging.debug('headersize: %d',sh.headersize)
                             header = s.recv(sh.headersize)  
+                            logging.debug('header: %s',header)
                             metadata_len = sh.validate_header_magic(header)
+                            logging.debug('metadata len: %d',metadata_len)
+                            waiting_for_header.remove(s)
                             if metadata_len > 0:
                                 data = s.recv(metadata_len)
                                 metadata = sh.extract_metadata(header,data)
+                                logging.debug('rx metadata: %s',metadata)
                                 if sh.validate_metadata(metadata) is False:  
+                                    logging.debug('metadata not valid ')
                                     metadata = None
                         except ConnectionResetError:
                             logging.debug('rx recieve header error connection reset :%d',s.fileno())
                             pass
-                        if metadata is not None: 
+                        if metadata is None: 
+                            logging.debug('no metadata ')
+                        else:
                             logging.debug('rx  metadata :%s', metadata)
                             #2. decode it to decide where we should be connecting to 
                             if 'host' in metadata:
@@ -176,7 +184,6 @@ class EdgeProc(threading.Thread):
                             peers[st] = s
                             message_qs[s] = queue.Queue()
                             message_qs[st] = queue.Queue()
-                            waiting_for_header.remove(s)
                     else:
                         try:
                             if s.fileno() is -1:
