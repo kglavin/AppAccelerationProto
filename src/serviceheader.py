@@ -18,7 +18,8 @@ class ServiceHeader(object):
 			metadata['id'] = id
 		if metadata['id'] is not None:
 			m = hashlib.md5()
-			m.update(self.sharedsecret + str(id).encode() + str(metadata['host']).encode() + str(metadata['port']).encode())
+			#m.update(self.sharedsecret + str(id).encode() + str(metadata['host']).encode() + str(metadata['port']).encode())
+			m.update(self.sharedsecret)
 			metadata['md5'] = m.hexdigest()
 			#print("md5 = ",m.hexdigest())
 		else:
@@ -40,11 +41,14 @@ class ServiceHeader(object):
 		if metadata is None:
 			return False
 		if 'id' in metadata and 'md5' in metadata:
-			m = hashlib.md5()
-			m.update(self.sharedsecret + str(metadata['id']).encode() + str(metadata['host']).encode() + str(metadata['port']).encode())
-			calculated_h = m.hexdigest()
-			if metadata['md5'] == calculated_h:
-				return True
+                        m = hashlib.md5()
+                        #m.update(self.sharedsecret + str(metadata['id']).encode() + str(metadata['host']).encode() + str(metadata['port']).encode())
+                        m.update(self.sharedsecret)
+                        calculated_h = m.hexdigest()
+                        print("calculated hexdigest(): ", calculated_h)
+                        print("metadata hexdigest(): ", metadata['md5'])
+                        if metadata['md5'] == calculated_h:
+                            return True
 		return False
 
 	def extract_metadata(self, header=None, buf=None):
