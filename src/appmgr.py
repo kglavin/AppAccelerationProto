@@ -35,8 +35,10 @@ class AppMgr(threading.Thread):
             args_dict = {'args': (queue.Queue(),queue.Queue()), 
                          'kwargs': {'hostlocal': hl,
                                     'servicelocal': 443,
-                                    'hosttarget': target_ips[n],
-                                    'servicetarget': 443 }}
+                                    'hosttarget': target_hosts[n],
+                                    'servicetarget': 443,
+                                    'edgetarget': '44.1.0.165',
+                                    'edgeservice': 443 }}
             target_map[target_hosts[n]] = {'hostlocal': hl,
                                            'servicelocal': 443}
             req = proxy.ProxyMgrReq(id=n, req_type=req_type, args_dict=args_dict)

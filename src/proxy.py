@@ -103,6 +103,16 @@ class Proxy(threading.Thread):
         else:
             self.servicetarget = 443
 
+        if 'edgetarget' in self.kwargs:
+            self.edgetarget = self.kwargs['edgetarget']
+        else:
+            self.hosttarget = "44.1.0.100"
+        
+        if 'edgeservice' in self.kwargs:
+            self.edgeservice = self.kwargs['edgeservice']
+        else:
+            self.edgeservice = 443
+
         if 'sharedsecret' in self.kwargs:
             self.sharedsecret = self.kwargs['sharedsecret']
         else:
@@ -158,7 +168,7 @@ class Proxy(threading.Thread):
 
                         logging.debug('creating new outbound connection:%s:%d and %s',self.hosttarget,self.servicetarget, str(st))
                         try:
-                            st.connect((self.hosttarget, self.servicetarget))
+                            st.connect((self.edgetarget, self.edgeservice))
                             logging.debug('tx  metadata :%s', metadata)
                             st.send(header)
                             st.send(metadata.encode())
