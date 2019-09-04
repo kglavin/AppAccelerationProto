@@ -24,7 +24,8 @@ class AppMgr(threading.Thread):
         resolver_rsp = self.kwargs['r-a']
 
         target_hosts = [ "", "www.google.com", "www.yahoo.com", "www.facebook.com","www.instagram.com"]
-        target_ips = [ '', '172.217.6.36', '98.137.246.8', '31.13.70.36', '31.13.70.174']
+        #target_ips = [ '', '172.217.6.36', '98.137.246.8', '31.13.70.36', '31.13.70.174']
+        target_ips = [ '', '44.1.0.165', '44.1.0.165', '44.1.0.165', '44.1.0.165']
         target_map = {}
         
         for n in [1,2,3,4]:

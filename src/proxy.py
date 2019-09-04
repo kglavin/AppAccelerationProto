@@ -149,27 +149,32 @@ class Proxy(threading.Thread):
                         # using the connection as part of the proxy pair. 
                         st = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                         sh = serviceheader.ServiceHeader(self.sharedsecret)
-                        metadata = Dict()
+                        metadata = {} 
                         metadata['host'] = self.hosttarget
-                        metadata['port'] - self.hostservice
+                        metadata['port'] = self.servicetarget
                         metadata['id'] = random.randint(1, 200000)
                         header, metadata = sh.generate(metadata)
                         metadata_len = sh.validate_header_magic(header) 
 
                         logging.debug('creating new outbound connection:%s:%d and %s',self.hosttarget,self.servicetarget, str(st))
-                        st.connect((self.hosttarget, self.servicetarget))
-                        logging.debug('tx  metadata :%s', metadata)
-                        st.send(header)
-                        st.send(metadata)
+                        try:
+                            st.connect((self.hosttarget, self.servicetarget))
+                            logging.debug('tx  metadata :%s', metadata)
+                            st.send(header)
+                            st.send(metadata.encode())
 
-                        inputs.append(st)
-                        targets.append(st) 
-                        logging.debug('created new outbound connection:%s:%d and %s',self.hosttarget,self.servicetarget, str(st))
-                        # entangle the connection and st using the peers list
-                        peers[connection] = st
-                        peers[st] = connection
-                        message_qs[connection] = queue.Queue()
-                        message_qs[st] = queue.Queue()
+                            inputs.append(st)
+                            targets.append(st) 
+                            logging.debug('created new outbound connection:%s:%d and %s',self.hosttarget,self.servicetarget, str(st))
+                            # entangle the connection and st using the peers list
+                            peers[connection] = st
+                            peers[st] = connection
+                            message_qs[connection] = queue.Queue()
+                            message_qs[st] = queue.Queue()
+                        except ConnectionRefusedError:
+                            logging.debug(' edge processor connection refused :%d',s.fileno())
+                            st.close()
+                            pass
                     else:
                         # process rx from existing sockets, sendind as rx to peer sockets via internal queues 
                         try:
@@ -213,7 +218,8 @@ class Proxy(threading.Thread):
                             except OSError:
                                 pass
                             s.close()
-                            del message_qs[s]
+                            if s in message_qs:
+                                del message_qs[s]
 
                 for s in writable:
                     # for outbound sockets that are writable, write queued data if there is any
