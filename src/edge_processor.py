@@ -191,8 +191,9 @@ class EdgeProc(threading.Thread):
                             st = peers[s]
                             if st in message_qs:
                                 qsize = message_qs[st].qsize()
-                        if qsize > 10:
-                              logging.debug('large queue of received data - throttling :%d', qsize)
+                        if qsize > 100:
+                              #logging.debug('large queue of received data - throttling :%d', qsize)
+                              pass
                         else:  
                             try:
                                 if s.fileno() is -1:

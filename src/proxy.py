@@ -194,7 +194,8 @@ class Proxy(threading.Thread):
                             if st in message_qs:
                                 qsize = message_qs[st].qsize()
                         if qsize > 100:
-                            logging.debug('large queue of received data - throttling :%d', qsize)
+                            #logging.debug('large queue of received data - throttling :%d', qsize)
+                            pass
                         else:  
                             try:
                                 data = s.recv(4096)  
