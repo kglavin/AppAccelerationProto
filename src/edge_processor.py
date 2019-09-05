@@ -120,11 +120,11 @@ class EdgeProc(threading.Thread):
         while inputs:
             for s in inputs:
                 if s.fileno() is -1:
-                    logging.debug('dead fd in inputs:%s', str(s))
+                    #logging.debug('dead fd in inputs:%s', str(s))
                     inputs.remove(s)
             for s in outputs:
                 if s.fileno() is -1:
-                    logging.debug('dead fd in outputs:%s', str(s))
+                    #logging.debug('dead fd in outputs:%s', str(s))
                     outputs.remove(s)
             if inputs:        
                 readable, writable, exceptional = select.select(inputs, outputs, inputs)
@@ -144,11 +144,11 @@ class EdgeProc(threading.Thread):
                         metadata = None
                         try:
                             # first hundred bytes is the hidden header
-                            logging.debug('headersize: %d',sh.headersize)
+                            #logging.debug('headersize: %d',sh.headersize)
                             header = s.recv(sh.headersize)  
-                            logging.debug('header: %s',header)
+                            #logging.debug('header: %s',header)
                             metadata_len = sh.validate_header_magic(header)
-                            logging.debug('metadata len: %d',metadata_len)
+                            #logging.debug('metadata len: %d',metadata_len)
                             waiting_for_header.remove(s)
                             if metadata_len > 0:
                                 data = s.recv(metadata_len)
@@ -163,7 +163,7 @@ class EdgeProc(threading.Thread):
                         if metadata is None: 
                             logging.debug('no metadata ')
                         else:
-                            logging.debug('rx  metadata :%s', metadata)
+                            #logging.debug('rx  metadata :%s', metadata)
                             #2. decode it to decide where we should be connecting to 
                             if 'host' in metadata:
                                 target_host = metadata['host']
@@ -174,7 +174,9 @@ class EdgeProc(threading.Thread):
                             st = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                             inputs.append(st)
 
-                            logging.debug('creating new outbound connection:%s:%d and %s',target_host,target_port, str(st))
+                            #logging.debug('creating new outbound connection:%s:%d and %s',target_host,target_port, str(st))
+
+                            #TODO need a try around this. 
                             st.connect((target_host, target_port))
                             inputs.append(st)
                    
