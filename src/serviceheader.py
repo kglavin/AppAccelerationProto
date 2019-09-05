@@ -46,7 +46,7 @@ class ServiceHeader(object):
             if metadata['md5'] == calculated_h:
                 return True
             else:
-                logging.debug('metadata[md5] != calculated md5: %s,' metadata)
+                logging.debug('metadata[md5] != calculated md5: %s', metadata)
 
         return False
 
