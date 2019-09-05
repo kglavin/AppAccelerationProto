@@ -196,10 +196,11 @@ class EdgeProc(threading.Thread):
                             logging.debug('rx recieve error connection reset :%d',s.fileno())
                             pass
                         if data:
+                            logging.debug('rx receive data - len %d, data: %s',len(data), str(data))
                             if s in peers:
                                 st = peers[s]
                                 if st in message_qs:
-                                    #logging.debug('queuing rx data on :%d from %d',st.fileno(), s.fileno())
+                                    logging.debug('queuing rx data on :%d from %d',st.fileno(), s.fileno())
                                     message_qs[st].put(data)
                                 if st not in outputs:
                                     outputs.append(st)
