@@ -186,56 +186,62 @@ class EdgeProc(threading.Thread):
                             message_qs[s] = queue.Queue()
                             message_qs[st] = queue.Queue()
                     else:
-                        try:
-                            if s.fileno() is -1:
-                                logging.debug('dead fd in recv data :%s', str(s))
-                                inputs.remove(s)
+                        qsize = 0
+                        if s in peers:
+                            st = peers[s]
+                            if st in message_qs:
+                                qsize = message_qs[st].qsize()
+                        if qsize < 50:        
+                            try:
+                                if s.fileno() is -1:
+                                    logging.debug('dead fd in recv data :%s', str(s))
+                                    inputs.remove(s)
+                                else:
+                                    data = s.recv(4096)  
+                            except ConnectionResetError:
+                                logging.debug('rx recieve error connection reset :%d',s.fileno())
+                                pass
+                            if data:
+                                #logging.debug('rx receive data - len %d, data: %s',len(data), str(data))
+                                if s in peers:
+                                    st = peers[s]
+                                    if st in message_qs:
+                                        #logging.debug('queuing rx data on :%d from %d',st.fileno(), s.fileno())
+                                        message_qs[st].put(data)
+                                    if st not in outputs:
+                                        outputs.append(st)
                             else:
-                                data = s.recv(4096)  
-                        except ConnectionResetError:
-                            logging.debug('rx recieve error connection reset :%d',s.fileno())
-                            pass
-                        if data:
-                            #logging.debug('rx receive data - len %d, data: %s',len(data), str(data))
-                            if s in peers:
-                                st = peers[s]
-                                if st in message_qs:
-                                    #logging.debug('queuing rx data on :%d from %d',st.fileno(), s.fileno())
-                                    message_qs[st].put(data)
-                                if st not in outputs:
-                                    outputs.append(st)
-                        else:
-                            if s in outputs:
-                                outputs.remove(s)
-                                logging.debug('no data, removing from outputs :%s ',str(s))
-                            if s in peers:
-                                #logging.debug('no data, clean up peers :%s ',str(s))
-                                st = peers[s]
-                                #logging.debug('no data, clean up peers - st :%s ',str(st))
-                                del peers[s]
-                                del peers[st]
-                                if st in inputs:
-                                    inputs.remove(st)
-                                if st in outputs:
-                                    outputs.remove(st)
-                                logging.debug('no data, closing sockets st :%s ',str(st)) 
+                                if s in outputs:
+                                    outputs.remove(s)
+                                    logging.debug('no data, removing from outputs :%s ',str(s))
+                                if s in peers:
+                                    #logging.debug('no data, clean up peers :%s ',str(s))
+                                    st = peers[s]
+                                    #logging.debug('no data, clean up peers - st :%s ',str(st))
+                                    del peers[s]
+                                    del peers[st]
+                                    if st in inputs:
+                                        inputs.remove(st)
+                                    if st in outputs:
+                                        outputs.remove(st)
+                                    logging.debug('no data, closing sockets st :%s ',str(st)) 
+                                    try:
+                                        st.shutdown(1)
+                                    except OSError:
+                                        pass
+                                    st.close()
+                                    if s in message_qs:
+                                        del message_qs[st]
+                                logging.debug('no data, closing sockets :%s ',str(s)) 
+                                if s in inputs:  
+                                    inputs.remove(s)
                                 try:
-                                    st.shutdown(1)
+                                    s.shutdown(1)
                                 except OSError:
                                     pass
-                                st.close()
+                                s.close()
                                 if s in message_qs:
-                                    del message_qs[st]
-                            logging.debug('no data, closing sockets :%s ',str(s)) 
-                            if s in inputs:  
-                                inputs.remove(s)
-                            try:
-                                s.shutdown(1)
-                            except OSError:
-                                pass
-                            s.close()
-                            if s in message_qs:
-                                del message_qs[s]
+                                    del message_qs[s]
 
                 for s in writable:
                     try:
