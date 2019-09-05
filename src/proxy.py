@@ -204,32 +204,32 @@ class Proxy(threading.Thread):
                             if s in outputs:
                                 outputs.remove(s)
                                 logging.debug('no data, removing from outputs :%s ',str(s))
-                            if s in peers:
-                                logging.debug('no data, clean up peers :%s ',str(s))
-                                st = peers[s]
-                                logging.debug('no data, clean up peers - st :%s ',str(st))
-                                del peers[s]
-                                del peers[st]
-                                if st in inputs:
-                                    inputs.remove(st)
-                                if st in outputs:
-                                    outputs.remove(st)
-                                logging.debug('no data, closing sockets st :%s ',str(st)) 
-                                try:
-                                    st.shutdown(1)
-                                except OSError:
-                                    pass
-                                st.close()
-                                del message_qs[st]
-                            logging.debug('no data, closing sockets :%s ',str(s))   
-                            inputs.remove(s)
-                            try:
-                                s.shutdown(1)
-                            except OSError:
-                                pass
-                            s.close()
-                            if s in message_qs:
-                                del message_qs[s]
+                            #if s in peers:
+                            #    logging.debug('no data, clean up peers :%s ',str(s))
+                            #    st = peers[s]
+                            #    logging.debug('no data, clean up peers - st :%s ',str(st))
+                            #    del peers[s]
+                            #    del peers[st]
+                            #    if st in inputs:
+                            #        inputs.remove(st)
+                            #    if st in outputs:
+                            #        outputs.remove(st)
+                            #    logging.debug('no data, closing sockets st :%s ',str(st)) 
+                            #    try:
+                            #        st.shutdown(1)
+                            #    except OSError:
+                            #        pass
+                            #    st.close()
+                            #    del message_qs[st]
+                            #logging.debug('no data, closing sockets :%s ',str(s))   
+                            #inputs.remove(s)
+                            #try:
+                            #    s.shutdown(1)
+                            #except OSError:
+                            #    pass
+                            #s.close()
+                            #if s in message_qs:
+                            #    del message_qs[s]
 
                 for s in writable:
                     # for outbound sockets that are writable, write queued data if there is any
