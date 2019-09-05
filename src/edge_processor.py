@@ -136,8 +136,7 @@ class EdgeProc(threading.Thread):
                         waiting_for_header.append(connection)
                     elif s in waiting_for_header:
 
-                        ###logging.debug('accepted new connection:%s - %s',client_address, str(connection))
-                        ## create a connection to target server HERE 
+                        logging.debug('accepted new connection:%s - %s',client_address, str(connection))
 
                         #1. read the header from the socket, decode the metadata and derive the target service and port. 
                         sh = serviceheader.ServiceHeader(self.sharedsecret)
@@ -146,7 +145,7 @@ class EdgeProc(threading.Thread):
                             # first hundred bytes is the hidden header
                             #logging.debug('headersize: %d',sh.headersize)
                             header = s.recv(sh.headersize)  
-                            #logging.debug('header: %s',header)
+                            logging.debug('header: %s',header)
                             metadata_len = sh.validate_header_magic(header)
                             #logging.debug('metadata len: %d',metadata_len)
                             waiting_for_header.remove(s)
