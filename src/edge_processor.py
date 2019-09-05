@@ -198,7 +198,8 @@ class EdgeProc(threading.Thread):
                             try:
                                 if s.fileno() is -1:
                                     logging.debug('dead fd in recv data :%s', str(s))
-                                    inputs.remove(s)
+                                    if s in inputs:
+                                        inputs.remove(s)
                                 else:
                                     data = s.recv(4096)  
                             except ConnectionResetError:
