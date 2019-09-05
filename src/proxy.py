@@ -170,8 +170,9 @@ class Proxy(threading.Thread):
                         try:
                             st.connect((self.edgetarget, self.edgeservice))
                             logging.debug('tx  metadata :%s', metadata)
-                            st.send(header)
-                            st.send(metadata.encode())
+                            #st.send(header)
+                            #st.send(metadata.encode())
+                            st.send(header+metadata.encode())
 
                             inputs.append(st)
                             targets.append(st) 
