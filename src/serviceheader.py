@@ -44,7 +44,7 @@ class ServiceHeader(object):
             m.update(self.sharedsecret + str(metadata['id']).encode() + str(metadata['host']).encode() + str(metadata['port']).encode())
             calculated_h = m.hexdigest()
             if metadata['md5'] == calculated_h:
-                logging.debug('metadata[md5] == calculated md5: %s', metadata)
+                #logging.debug('metadata[md5] == calculated md5: %s', metadata)
                 return True
             else:
                 logging.debug('metadata[md5] != calculated md5: %s', metadata)
