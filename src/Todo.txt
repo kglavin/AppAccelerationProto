@@ -1,0 +1,12 @@
+Todo.txt
+
+*  bind multiple ports to 127 -- 443, 80, 25, 21, 22 
+*  make a transiting edge proxy header in - header out
+*  statistics channel off all entities
+*  edge proxies with ability to bind to interface rather then * 
+*  active measurement for paths
+*  L4 routing map, topology awareness 
+*  controller 
+*  move/add proc inspection to connection acceptance
+*  iperf with multiple simultaneous connections
+*  multi-hop test best with traffic delay/loss
