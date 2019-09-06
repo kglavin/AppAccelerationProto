@@ -1,6 +1,6 @@
 Todo.txt
 
-*  bind multiple ports to 127 -- 443, 80, 25, 21, 22 
+*  bind multiple ports to 127 -- 443, 80, 25, 21, 22. --- [Done -- working with 443 and http, problems still with 5201 iperf]
 *  make a transiting edge proxy header in - header out
 *  statistics channel off all entities
 *  edge proxies with ability to bind to interface rather then * 
@@ -8,5 +8,7 @@ Todo.txt
 *  L4 routing map, topology awareness 
 *  controller 
 *  move/add proc inspection to connection acceptance
-*  iperf with multiple simultaneous connections
+*  iperf with multiple simultaneous connections 
 *  multi-hop test best with traffic delay/loss
+*  backpressure across internal queues
+

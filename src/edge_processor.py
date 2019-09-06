@@ -197,7 +197,7 @@ class EdgeProc(threading.Thread):
                         else:  
                             try:
                                 if s.fileno() is -1:
-                                    logging.debug('dead fd in recv data :%s', str(s))
+                                    #logging.debug('dead fd in recv data :%s', str(s))
                                     if s in inputs:
                                         inputs.remove(s)
                                 else:
@@ -228,7 +228,7 @@ class EdgeProc(threading.Thread):
                                         inputs.remove(st)
                                     if st in outputs:
                                         outputs.remove(st)
-                                    logging.debug('no data, closing sockets st :%s ',str(st)) 
+                                    #logging.debug('no data, closing sockets st :%s ',str(st)) 
                                     try:
                                         st.shutdown(1)
                                     except OSError:
