@@ -25,6 +25,8 @@ class AppMgr(threading.Thread):
 
         target_hosts = [ "", "www.google.com", "www.yahoo.com", "www.facebook.com","www.instagram.com"]
         #target_ips = [ '', '172.217.6.36', '98.137.246.8', '31.13.70.36', '31.13.70.174']
+
+        # these are the hardcoded edge_processor ip addresses, this needs to change. 
         target_ips = [ '', '44.1.0.165', '44.1.0.165', '44.1.0.165', '44.1.0.165']
         target_map = {}
         
@@ -34,7 +36,7 @@ class AppMgr(threading.Thread):
             hl = '127.0.100.' + str(n)
             args_dict = {'args': (queue.Queue(),queue.Queue()), 
                          'kwargs': {'hostlocal': hl,
-                                    'servicelocal': 443,
+                                    'servicelocal': [443, 80, 5201],
                                     'hosttarget': target_hosts[n],
                                     'servicetarget': 443,
                                     'edgetarget': '44.1.0.165',

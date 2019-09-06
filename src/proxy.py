@@ -91,7 +91,7 @@ class Proxy(threading.Thread):
         if 'servicelocal' in self.kwargs:
             self.servicelocal = self.kwargs['servicelocal']
         else:
-            self.servicelocal = 5443
+            self.servicelocal = [5443] 
 
         if 'hosttarget' in self.kwargs:
             self.hosttarget = self.kwargs['hosttarget']
@@ -124,18 +124,22 @@ class Proxy(threading.Thread):
 
     def post_run(self):
         logging.debug('running with %s and %s',self.args, self.kwargs)
-
-        server=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.setblocking(0)
-        server.bind((self.hostlocal, self.servicelocal))
-        server.listen(5)
-        logging.debug('server socket bound:%s, %s and %d', str(server), self.hostlocal,self.servicelocal)
-
-        inputs=[server]
+        
+        inputs=[]
+        servers = []
         outputs = []
         targets = []
         message_qs = {}
         peers = {}
+
+        for service in self.servicelocal:
+            s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.setblocking(0)
+            s.bind((self.hostlocal, service))
+            s.listen(5)
+            logging.debug('server socket bound:%s, %s and %d', str(s), self.hostlocal,service)
+            inputs.append(s)
+            servers.append(s)
 
         while inputs:
             for s in inputs:
@@ -150,10 +154,14 @@ class Proxy(threading.Thread):
                 readable, writable, exceptional = select.select(inputs, outputs, inputs)
                 for s in readable:
                     # Accept new connections to server
-                    if s is server:
+                    if s in servers:
                         connection, client_address = s.accept()
+                        logging.debug('Accepted connection on :%s,connection: %s', str(s), str(connection))
                         connection.setblocking(0)
                         inputs.append(connection)
+
+                        laddr, lport  = connection.getsockname()
+                        #logging.debug('local connection details: %s, %d', laddr, lport)
                         
                         # create an outbound socket to the edge processor, create and send the header and metadata prior to 
                         # using the connection as part of the proxy pair. 
@@ -161,12 +169,12 @@ class Proxy(threading.Thread):
                         sh = serviceheader.ServiceHeader(self.sharedsecret)
                         metadata = {} 
                         metadata['host'] = self.hosttarget
-                        metadata['port'] = self.servicetarget
+                        metadata['port'] = lport
                         metadata['id'] = random.randint(1, 200000)
                         header, metadata = sh.generate(metadata)
                         metadata_len = sh.validate_header_magic(header) 
 
-                        logging.debug('creating new outbound connection:%s:%d and %s',self.hosttarget,self.servicetarget, str(st))
+                        logging.debug('creating new outbound connection:%s:%d and %s',self.hosttarget,lport, str(st))
                         try:
                             st.connect((self.edgetarget, self.edgeservice))
                             logging.debug('tx  metadata :%s', metadata)
@@ -176,7 +184,7 @@ class Proxy(threading.Thread):
 
                             inputs.append(st)
                             targets.append(st) 
-                            logging.debug('created new outbound connection:%s:%d and %s',self.hosttarget,self.servicetarget, str(st))
+                            logging.debug('created new outbound connection:%s:%d and %s',self.hosttarget,lport, str(st))
                             # entangle the connection and st using the peers list
                             peers[connection] = st
                             peers[st] = connection

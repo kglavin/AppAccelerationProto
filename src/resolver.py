@@ -295,6 +295,7 @@ class Resolver(threading.Thread):
 
                 # issue a generic dns request (TODO this is hardcoded and needs to change)
                 dns_res_addr = ('44.1.13.1',53)
+                #dns_res_addr  = ('10.33.5.10',53)
                 client_qitem = (dns_res_addr,m)
         
                 ###logging.debug('server_rxqueue: sending to client_tx %s, %d',dns_res_addr, m.id)
